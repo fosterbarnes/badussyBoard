@@ -1,0 +1,159 @@
+﻿<Window x:Class="BadussyBoard.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:BadussyBoard"
+        mc:Ignorable="d"
+        Title="Badussy Board" Height="650" Width="525" Background="#1b1b1b">
+
+    <Window.Resources>
+        <Style x:Key="MaterialDesignButton" TargetType="Button">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="Transparent">
+                            <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="IconHover" TargetType="materialDesign:PackIcon">
+            <Setter Property="Width" Value="Auto"/>
+            <Setter Property="Height" Value="Auto"/>
+            <Setter Property="Foreground" Value="#765e98"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                    <Setter Property="Foreground" Value="#9373c0"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- Buttons-->
+            <RowDefinition Height="*"/>     <!-- SoundDataGrid-->
+        </Grid.RowDefinitions>
+        
+        <!-- Buttons Row-->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>    <!-- 1st button set         | Grid.Column="0"-->
+                <ColumnDefinition Width="30"/>      <!-- Spacer (30px)          | Grid.Column="1"-->
+                <ColumnDefinition Width="Auto"/>    <!-- 2nd button set         | Grid.Column="2"-->
+                <ColumnDefinition Width="*"/>       <!-- Spacer (Fill space)    | Grid.Column="3"-->
+                <ColumnDefinition Width="Auto"/>    <!-- 3rd button set         | Grid.Column="4"-->
+            </Grid.ColumnDefinitions>
+
+        <!-- 1st button set (Add, Remove, Edit)-->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+            <Button x:Name="Add" Style="{StaticResource MaterialDesignButton}" ToolTip="Add" Click="Add_Click">
+                <materialDesign:PackIcon Kind="PlusThick" Style="{StaticResource IconHover}"/>
+            </Button>
+
+            <Button x:Name="Remove" Style="{StaticResource MaterialDesignButton}" ToolTip="Remove" Click="Remove_Click">
+                <materialDesign:PackIcon Kind="MinusThick" Style="{StaticResource IconHover}"/>
+            </Button>
+
+            <Button x:Name="Edit" Style="{StaticResource MaterialDesignButton}" ToolTip="Edit" Click="Edit_Click">
+                <materialDesign:PackIcon Kind="PencilOutline" Style="{StaticResource IconHover}"/>
+            </Button>
+        </StackPanel>
+
+        <!-- 2nd button set (Play, Stop)-->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="2">
+            <Button x:Name="Play" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Play" Click="Play_Click">
+                <materialDesign:PackIcon Kind="PlayCircle" Style="{StaticResource IconHover}"/>
+            </Button>
+
+            <Button x:Name="Stop" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Stop All Sounds" Click="Stop_Click">
+                <materialDesign:PackIcon Kind="StopCircle" Style="{StaticResource IconHover}"/>
+            </Button>
+        </StackPanel>
+
+        <!-- 3rd button set (Levels, Settings)-->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="4">
+            <Button x:Name="Levels" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Audio Levels" Click="Levels_Click">
+                <materialDesign:PackIcon Kind="Tune" Style="{StaticResource IconHover}"/>
+            </Button>
+
+            <Button x:Name="Settings" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Settings" Click="Settings_Click">
+                <materialDesign:PackIcon Kind="Cog" Style="{StaticResource IconHover}"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+
+
+        <DataGrid x:Name="SoundDataGrid" RowHeaderWidth="0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeRows="False" IsReadOnly="True" 
+            GridLinesVisibility="None" BorderBrush="#5e5e5e" SelectionMode="Single" Grid.Row="1" Background="#282828">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#181818"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#5e5e5e"/>
+                    <Setter Property="BorderThickness" Value="1,0,1,1"/>
+                    <Setter Property="Padding" Value="2,2,2,2"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#666666"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.RowHeaderStyle>
+                <Style TargetType="DataGridRowHeader">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </DataGrid.RowHeaderStyle>
+
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="#2c2c2c"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Style>
+            </DataGrid.RowStyle>
+
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderBrush" Value="#5e5e5e"/>
+                    <Setter Property="BorderThickness" Value="1,0,1,1"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#4d3c64"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Sound File" Binding="{Binding SoundFile}" Width="*"
+                                    CanUserSort="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="2"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                
+                <DataGridTextColumn Header="Hotkey" Binding="{Binding Hotkey}" Width="200"
+                                    CanUserSort="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="2"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

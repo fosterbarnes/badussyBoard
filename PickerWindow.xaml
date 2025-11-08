@@ -1,0 +1,89 @@
+﻿<Window x:Class="BadussyBoard.PickerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:BadussyBoard"
+        mc:Ignorable="d"
+        Title="Sound Picker" Height="350" Width="525" Background="#1b1b1b">
+
+    <Grid Margin="15,15,15,15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>      <!-- Sound Picker -->
+            <RowDefinition Height="Auto"/>      <!-- Sound File Path-->
+            <RowDefinition Height="Auto"/>      <!-- Separator-->
+            <RowDefinition Height="Auto"/>      <!-- Hotkey Text-->
+            <RowDefinition Height="Auto"/>      <!-- Hotkey Picker-->
+            <RowDefinition Height="Auto"/>      <!-- Separator-->
+            <RowDefinition Height="Auto"/>      <!-- MIDI Picker Text-->
+            <RowDefinition Height="Auto"/>      <!-- MIDI Picker -->
+            <RowDefinition Height="Auto"/>      <!-- Bottom Row -->
+        </Grid.RowDefinitions>
+
+        <!-- Sound Picker Row -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="Sound File:" FontSize="14" VerticalAlignment="Center" Foreground="White" Margin="0,0,0,3" Grid.Column="0"/>
+        </Grid>
+
+        <!-- Sound File Picker -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Border x:Name="SoundPicker" Background="#525252" BorderBrush="#7e7e7e" BorderThickness="1" Padding="3"  MouseLeftButtonDown="SoundPicker_LeftClick" MouseRightButtonDown="SoundPicker_RightClick">
+                <TextBlock x:Name="SoundPickerText" Text="Click to set sound file..." FontSize="14" FontFamily="Consolas" VerticalAlignment="Center" Foreground="White"/>
+            </Border>
+        </Grid>
+
+        <!-- Separator Row -->
+        <Grid Grid.Row="2" Margin="0,0,0,10">
+            <Separator Background="#525252" Height="1" />
+        </Grid>
+
+        <!-- Hotkey Text -->
+        <Grid Grid.Row="3" Margin="0,0,0,10">
+            <TextBlock Text="Hotkey:" FontSize="14" VerticalAlignment="Center" Foreground="White" Margin="0,0,0,3"/>
+        </Grid>
+
+        <!-- Hotkey Picker -->
+        <Grid Grid.Row="4" Margin="0,0,0,10">
+            <Border x:Name="HotkeyPicker" Background="#525252" BorderBrush="#7e7e7e" BorderThickness="1" Padding="3"  MouseLeftButtonDown="HotkeyPicker_LeftClick" MouseRightButtonDown="HotkeyPicker_RightClick">
+                <TextBlock x:Name="HotkeyPickerText" Text="Click to set hotkey..." FontSize="14" FontFamily="Consolas" Foreground="White" VerticalAlignment="Center"/>
+            </Border>
+        </Grid>
+
+        <!-- Separator Row -->
+        <Grid Grid.Row="5" Margin="0,0,0,10">
+            <Separator Background="#525252" Height="1" />
+        </Grid>
+
+        <!-- MIDI Picker Text -->
+        <Grid Grid.Row="6" Margin="0,0,0,10">
+            <TextBlock Text="MIDI Hotkey:" FontSize="14" VerticalAlignment="Center" Foreground="White" Margin="0,0,0,3"/>
+        </Grid>
+
+        <!-- MIDI Picker -->
+        <Grid Grid.Row="7" Margin="0,0,0,10">
+            <Border x:Name="MIDIPicker" Background="#525252" BorderBrush="#7e7e7e" BorderThickness="1" Padding="3"  MouseLeftButtonDown="MIDIPicker_LeftClick" MouseRightButtonDown="MIDIPicker_RightClick">
+                <TextBlock x:Name="MIDIPickerText" Text="Click to set MIDI hotkey..." FontSize="14" FontFamily="Consolas" Foreground="White" VerticalAlignment="Center"/>
+            </Border>
+        </Grid>
+        
+        <Grid Grid.Row="8" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>    <!-- Instruction Text        | Grid.Column="0"-->
+                <ColumnDefinition Width="*"/>      <!--  Spacer (*px)            | Grid.Column="1"-->
+                <ColumnDefinition Width="Auto"/>    <!-- Done Button             | Grid.Column="2"-->
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                <TextBlock x:Name="InstructionText" Text="*Right click to clear hotkeys" FontSize="14" VerticalAlignment="Center" Foreground="White" Margin="0,0,0,3"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
+                <Button x:Name="Done" Content="Done" Width="60" Height="25" Click="Done_Click"/>
+            </StackPanel>
+
+        </Grid>
+        
+
+    </Grid>
+</Window>
