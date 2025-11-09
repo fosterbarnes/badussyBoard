@@ -1,0 +1,16 @@
+v0.0.1 (11/7/25): Added audio playback and wrote logic for some buttons
+- NAudio added as a dependency to handle audio playback
+- Edit button actually does something. Clicking it brings up PickerWindow and saves changed info back to the selected SoundItem
+- Play button actually does something. Clicking it plays the selected SoundItem
+- Stop button actually does something. Clicking it stops all currently playing sounds
+- Update README.md
+
+v0.0.2 (11/8/25): Added animations, ability to save some settings, and auto-loading of settings on startup. Backend QOL stuff
+- Added button animations to MainWindow
+- Added `.changelog`
+- Added `.version`
+- Added `.build.ps1` to automate building before GitHub releases
+- Added `img\icon` and created app icon
+- Added Save, Save As & Open buttons for saving SoundItems to .json
+- Most previously saved SoundItem .json is automatically saved on close, and loaded on startup. We store this info along with future app settings in \AppData\Roaming\BadussyBoard\settings.json
+- Changed title bars to force dark mode

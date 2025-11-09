@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:BadussyBoard"
         mc:Ignorable="d"
-        Title="Badussy Board" Height="650" Width="525" Background="#1b1b1b">
+        Title="Badussy Board" Height="650" Width="525" Background="#1b1b1b" Icon="pack://application:,,,/img/icon/b.ico">
 
     <Window.Resources>
         <Style x:Key="MaterialDesignButton" TargetType="Button">
@@ -14,6 +14,7 @@
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -46,51 +47,112 @@
         <!-- Buttons Row-->
         <Grid Grid.Row="0" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>    <!-- 1st button set         | Grid.Column="0"-->
-                <ColumnDefinition Width="30"/>      <!-- Spacer (30px)          | Grid.Column="1"-->
-                <ColumnDefinition Width="Auto"/>    <!-- 2nd button set         | Grid.Column="2"-->
-                <ColumnDefinition Width="*"/>       <!-- Spacer (Fill space)    | Grid.Column="3"-->
-                <ColumnDefinition Width="Auto"/>    <!-- 3rd button set         | Grid.Column="4"-->
+                <ColumnDefinition Width="Auto"/>    <!-- 1st button set (Add, Remove, Edit)  | Grid.Column="0"-->
+                <ColumnDefinition Width="30"/>      <!-- Spacer (30px)                       | Grid.Column="1"-->
+                <ColumnDefinition Width="Auto"/>    <!-- 2nd button set (Play, Stop)         | Grid.Column="2"-->
+                <ColumnDefinition Width="*"/>       <!-- Spacer (Fill space)                 | Grid.Column="3"-->
+                <ColumnDefinition Width="Auto"/>    <!-- 3rd button set (Save, Save As, Open)| Grid.Column="4"-->
+                <ColumnDefinition Width="30"/>      <!-- Spacer (30px)                       | Grid.Column="5"-->
+                <ColumnDefinition Width="Auto"/>    <!-- 4th button set (Levels, Settings)   | Grid.Column="6"-->
             </Grid.ColumnDefinitions>
 
-        <!-- 1st button set (Add, Remove, Edit)-->
+        <!-- 1st button set (Add, Remove, Edit) | Grid.Column="0"-->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
-            <Button x:Name="Add" Style="{StaticResource MaterialDesignButton}" ToolTip="Add" Click="Add_Click">
+            <!-- Add -->
+            <Button x:Name="Add" Style="{StaticResource MaterialDesignButton}" ToolTip="Add"
+                PreviewMouseLeftButtonDown="Add_Click_Down" PreviewMouseLeftButtonUp="Add_Click_Up">
+                <Button.RenderTransform>
+                    <ScaleTransform x:Name="AddAnimation" ScaleX="1" ScaleY="1"/>
+                </Button.RenderTransform>
                 <materialDesign:PackIcon Kind="PlusThick" Style="{StaticResource IconHover}"/>
             </Button>
-
-            <Button x:Name="Remove" Style="{StaticResource MaterialDesignButton}" ToolTip="Remove" Click="Remove_Click">
+            <!-- Remove -->
+            <Button x:Name="Remove" Style="{StaticResource MaterialDesignButton}" ToolTip="Remove"
+                PreviewMouseLeftButtonDown="Remove_Click_Down" PreviewMouseLeftButtonUp="Remove_Click_Up">
+                <Button.RenderTransform>
+                    <ScaleTransform x:Name="RemoveAnimation" ScaleX="1" ScaleY="1"/>
+                </Button.RenderTransform>
                 <materialDesign:PackIcon Kind="MinusThick" Style="{StaticResource IconHover}"/>
             </Button>
-
-            <Button x:Name="Edit" Style="{StaticResource MaterialDesignButton}" ToolTip="Edit" Click="Edit_Click">
+            <!-- Edit -->
+            <Button x:Name="Edit" Style="{StaticResource MaterialDesignButton}" ToolTip="Edit"
+                PreviewMouseLeftButtonDown="Edit_Click_Down" PreviewMouseLeftButtonUp="Edit_Click_Up">
+                <Button.RenderTransform>
+                    <ScaleTransform x:Name="EditAnimation" ScaleX="1" ScaleY="1"/>
+                </Button.RenderTransform>
                 <materialDesign:PackIcon Kind="PencilOutline" Style="{StaticResource IconHover}"/>
             </Button>
         </StackPanel>
-
-        <!-- 2nd button set (Play, Stop)-->
+        <!-- Spacer (30px)                      | Grid.Column="1"-->
+        <!-- 2nd button set (Play, Stop)        | Grid.Column="2"-->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="2">
-            <Button x:Name="Play" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Play" Click="Play_Click">
+            <!-- Play -->
+            <Button x:Name="Play" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Play" 
+                PreviewMouseLeftButtonDown="Play_Click_Down" PreviewMouseLeftButtonUp="Play_Click_Up">
+                <Button.RenderTransform> 
+                    <ScaleTransform x:Name="PlayAnimation" ScaleX="1" ScaleY="1"/> 
+                </Button.RenderTransform>
                 <materialDesign:PackIcon Kind="PlayCircle" Style="{StaticResource IconHover}"/>
             </Button>
-
-            <Button x:Name="Stop" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Stop All Sounds" Click="Stop_Click">
+            <!-- Stop -->
+            <Button x:Name="Stop" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Stop All Sounds"
+                PreviewMouseLeftButtonDown="Stop_Click_Down" PreviewMouseLeftButtonUp="Stop_Click_Up">
+                <Button.RenderTransform> 
+                    <ScaleTransform x:Name="StopAnimation" ScaleX="1" ScaleY="1"/> 
+                </Button.RenderTransform>
                 <materialDesign:PackIcon Kind="StopCircle" Style="{StaticResource IconHover}"/>
             </Button>
         </StackPanel>
-
-        <!-- 3rd button set (Levels, Settings)-->
+        <!-- Spacer (Fill space)                   | Grid.Column="3"-->
+        <!-- 4th button set (Save, Save As, Open)  | Grid.Column="4"-->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="4">
-            <Button x:Name="Levels" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Audio Levels" Click="Levels_Click">
+            <!-- Save -->
+            <Button x:Name="Save" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Save"
+                PreviewMouseLeftButtonDown="Save_Click_Down" PreviewMouseLeftButtonUp="Save_Click_Up">
+                <Button.RenderTransform> 
+                    <ScaleTransform x:Name="SaveAnimation" ScaleX="1" ScaleY="1"/> 
+                </Button.RenderTransform>
+                <materialDesign:PackIcon Kind="ContentSave" Style="{StaticResource IconHover}"/>
+            </Button>
+            <!-- Save As -->
+            <Button x:Name="SaveAs" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Save As"
+                PreviewMouseLeftButtonDown="SaveAs_Click_Down" PreviewMouseLeftButtonUp="SaveAs_Click_Up">
+                <Button.RenderTransform> 
+                    <ScaleTransform x:Name="SaveAsAnimation" ScaleX="1" ScaleY="1"/> 
+                </Button.RenderTransform>
+                <materialDesign:PackIcon Kind="ContentSavePlus" Style="{StaticResource IconHover}"/>
+            </Button>
+            <!-- Open -->
+            <Button x:Name="Open" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Open save file"
+                PreviewMouseLeftButtonDown="Open_Click_Down" PreviewMouseLeftButtonUp="Open_Click_Up">
+                <Button.RenderTransform> 
+                    <ScaleTransform x:Name="OpenAnimation" ScaleX="0.85" ScaleY="0.9"/> 
+                </Button.RenderTransform>
+                <materialDesign:PackIcon Kind="ApplicationImport" Style="{StaticResource IconHover}"/>
+            </Button>
+        </StackPanel>
+        <!-- Spacer (30px)                       | Grid.Column="5"-->
+        <!-- 4th button set (Levels, Settings)   | Grid.Column="6"-->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="6">
+            <!-- Levels -->
+            <Button x:Name="Levels" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Audio Levels"
+                PreviewMouseLeftButtonDown="Levels_Click_Down" PreviewMouseLeftButtonUp="Levels_Click_Up">
+                <Button.RenderTransform> 
+                    <ScaleTransform x:Name="LevelsAnimation" ScaleX="1" ScaleY="1"/> 
+                </Button.RenderTransform>
                 <materialDesign:PackIcon Kind="Tune" Style="{StaticResource IconHover}"/>
             </Button>
-
-            <Button x:Name="Settings" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Settings" Click="Settings_Click">
+            <!-- Settings -->
+            <Button x:Name="Settings" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignButton}" ToolTip="Settings" 
+                PreviewMouseLeftButtonDown="Settings_Click_Down" PreviewMouseLeftButtonUp="Settings_Click_Up">
+                <Button.RenderTransform> 
+                    <ScaleTransform x:Name="SettingsAnimation" ScaleX="1" ScaleY="1"/> 
+                </Button.RenderTransform>
                 <materialDesign:PackIcon Kind="Cog" Style="{StaticResource IconHover}"/>
             </Button>
         </StackPanel>
     </Grid>
-
+        
         <!-- Data grid of existing sounds-->
         <DataGrid x:Name="SoundDataGrid" RowHeaderWidth="0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeRows="False" IsReadOnly="True" 
             GridLinesVisibility="None" BorderBrush="#5e5e5e" SelectionMode="Single" Grid.Row="1" Background="#282828">

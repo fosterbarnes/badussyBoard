@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 
 namespace BadussyBoard
@@ -27,16 +29,33 @@ namespace BadussyBoard
 
         public PickerWindow(MainWindow mainWindow) : this(mainWindow, null) { } //this is here so calling "new PickerWindow(this)" still works
 
+        //Dark mode title bar setup
+        //TODO Don't repeat logic from MainWindow
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref bool attrValue, int attrSize);
+
         public PickerWindow(MainWindow mainWindow, SoundItem? soundToEdit) //main constructor
         {
             InitializeComponent();
             _mainWindow = mainWindow;
-
+             this.SourceInitialized += (s, e) => EnableDarkTitleBar();
             if (soundToEdit != null)
             {
                 _soundToEdit = soundToEdit;
                 PopulateFieldsFromItem(soundToEdit);
             }
+        }
+
+        private void EnableDarkTitleBar()
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            bool useDarkMode = true;
+
+            // Try both attribute IDs since they vary by Windows version
+            DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref useDarkMode, Marshal.SizeOf(useDarkMode));
+            DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1, ref useDarkMode, Marshal.SizeOf(useDarkMode));
         }
         
         private void PopulateFieldsFromItem(SoundItem item)
