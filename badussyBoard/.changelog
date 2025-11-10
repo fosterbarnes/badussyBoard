@@ -1,0 +1,29 @@
+v0.0.0.1: Added audio playback and wrote logic for some buttons
+- NAudio added as a dependency to handle audio playback
+- Edit button actually does something. Clicking it brings up PickerWindow and saves changed info back to the selected SoundItem
+- Play button actually does something. Clicking it plays the selected SoundItem
+- Stop button actually does something. Clicking it stops all currently playing sounds
+- Update README.md
+
+v0.0.0.2: Added animations, ability to save some settings, and auto-loading of settings on startup. Backend QOL stuff
+- Added button animations to MainWindow
+- Created `.changelog`
+- Created `.version`
+- Created `.build.ps1` to automate building before GitHub releases
+- Created `img\icon` and app icons
+- Added Save, Save As & Open buttons for saving SoundItems to .json
+- Most previously saved SoundItem .json is automatically saved on close, and loaded on startup. We store this info along with future app settings in `\AppData\Roaming\BadussyBoard\settings.json`
+- Changed title bars to force dark mode
+
+v0.0.0.3: Restructured repo files. Separated most methods from MainWindow into new classes. Attempted to get sound hotkeys working 
+- Restructure repo to put code and project files in `badussyBoard` instead of the root directory. May not be standard practice, but this makes the repo a better "landing page" for new users. New GitHub users may see these files and get confused, and this makes it so the user doesn't have to scroll as far to see the README (the part they actually need to see)
+- Created `AnimateButton.cs` to separate button animation logic from `MainWindow.xaml.cs`
+- Created `SettingsManager.cs` to separate settings files I/O logic from `MainWindow.xaml.cs`
+    - Renamed/reworked some functions to have clearer usecases
+- Created `SoundManager.cs` to separate sound playback logic from `MainWindow.xaml.cs` 
+- Fixed a tiny bug that would cause a PromptSaveAs if "Remove" button was clicked without actually removing a SoundItem
+- ATTEMPTED to get sounds playing when a registered hotkey is pressed. 
+    Not working:
+    - Modifiers like Ctrl, Alt, etc. are not respected in the app's current state. Removing a SoundItem with the remove button does not currently un-register its hotkey
+    TODO:
+    - Fix that shit

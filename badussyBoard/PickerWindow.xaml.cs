@@ -176,11 +176,14 @@ namespace BadussyBoard
                 return;
             }
 
+            SoundItem item; // for sound manager
+
             if (_soundToEdit != null)
             {
                 // update the existing item
                 _soundToEdit.FilePath = selectedFilePath!;
                 _soundToEdit.Hotkey = selectedHotkey!;
+                item = _soundToEdit;
                 //TODO MIDI hotkey
 
                 //refresh the DataGrid
@@ -189,14 +192,15 @@ namespace BadussyBoard
             else
             {
                 // Add item to MainWindow as new sound
-                _mainWindow.SoundItems.Add(new SoundItem
+                item = new SoundItem
                 {
                     FilePath = selectedFilePath!,
                     Hotkey = selectedHotkey!
                     //TODO MIDI Hotkey
-                });
+                };
+                _mainWindow.SoundItems.Add(item);
             }
-            
+            _mainWindow.Sound.RegisterHotkey(item); // Register the hotkey with SoundManager
 
             this.Close();
         }

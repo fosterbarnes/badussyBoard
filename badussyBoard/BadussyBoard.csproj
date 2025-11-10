@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyVersion>0.0.0.2</AssemblyVersion>
-    <Version>0.0.0.2</Version>
-    <FileVersion>0.0.0.2</FileVersion>
+    <AssemblyVersion>0.0.0.3</AssemblyVersion>
+    <Version>0.0.0.3</Version>
+    <FileVersion>0.0.0.3</FileVersion>
     <Company>FosterBarnes</Company>
     <Product>BadussyBoard</Product>
     <Copyright>Copyright (C) 2025 Foster Barnes</Copyright>
