@@ -1,18 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyVersion>0.0.0.3</AssemblyVersion>
-    <Version>0.0.0.3</Version>
-    <FileVersion>0.0.0.3</FileVersion>
+    <AssemblyVersion>0.0.0.4</AssemblyVersion>
+    <Version>0.0.0.4</Version>
+    <FileVersion>0.0.0.4</FileVersion>
     <Company>FosterBarnes</Company>
     <Product>BadussyBoard</Product>
     <Copyright>Copyright (C) 2025 Foster Barnes</Copyright>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <ApplicationIcon>img\icon\b.ico</ApplicationIcon>
   </PropertyGroup>
 

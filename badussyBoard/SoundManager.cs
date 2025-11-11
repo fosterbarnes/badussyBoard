@@ -1,6 +1,8 @@
 using BadussyBoard;
 using NAudio.Wave;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows.Input;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -57,20 +59,27 @@ public class SoundManager
     public void RegisterHotkey(SoundItem item)
     {
         if (string.IsNullOrWhiteSpace(item.Hotkey))
-        {
             return;
-        }
 
-        ParseHotkey(item.Hotkey, out uint modifiers, out uint key); // Convert string like "Ctrl + A" to modifier/key codes
+        ParseHotkey(item.Hotkey, out uint modifiers, out uint key);
+
+        // Check if this hotkey is already registered and unregister if necessary
+        int existingId = hotkeyMap.FirstOrDefault(kv => kv.Value.Hotkey == item.Hotkey).Key;
+        if (existingId != 0)
+        {
+            UnregisterHotKey(_windowHandle, existingId);
+            hotkeyMap.Remove(existingId);
+        }
 
         int id = nextHotkeyId++;
         if (RegisterHotKey(_windowHandle, id, modifiers, key))
         {
             hotkeyMap[id] = item;
+            Debug.WriteLine($"[SoundManager] Registered hotkey: {item.Hotkey} (mods={modifiers}, key={key})");
         }
         else
         {
-            System.Windows.MessageBox.Show($"Failed to register hotkey {item.Hotkey}");
+            Debug.WriteLine($"[SoundManager] Failed to register hotkey: {item.Hotkey}");
         }
     }
 
@@ -110,19 +119,34 @@ public class SoundManager
         key = 0;
 
         string[] parts = hotkey.Split('+', StringSplitOptions.TrimEntries);
-        foreach (var part in parts)
+
+        foreach (string part in parts)
         {
-            switch (part.ToUpper())
+            switch (part.ToUpperInvariant())
             {
-                case "CTRL": modifiers |= 0x0002; break;
-                case "ALT": modifiers |= 0x0001; break;
-                case "SHIFT": modifiers |= 0x0004; break;
-                case "WIN": modifiers |= 0x0008; break;
+                case "CTRL":
+                    modifiers |= 0x0002;  break; // MOD_CONTROL
+                case "ALT":
+                    modifiers |= 0x0001; break; // MOD_ALT 
+                case "SHIFT":
+                    modifiers |= 0x0004; break; // MOD_SHIFT
+                case "WIN":
+                    modifiers |= 0x0008; break; // MOD_WIN
                 default:
-                    key = (uint)System.Windows.Input.KeyInterop.VirtualKeyFromKey((System.Windows.Input.Key)Enum.Parse(typeof(System.Windows.Input.Key), part, true));
+                    try
+                    {
+                        key = (uint)KeyInterop.VirtualKeyFromKey(
+                            (Key)Enum.Parse(typeof(Key), part, true));
+                    }
+                    catch
+                    {
+                        Debug.WriteLine($"[ParseHotkey] Invalid key: {part}");
+                    }
                     break;
-            }
+                }
         }
+
+        Debug.WriteLine($"[ParseHotkey] Parsed => Modifiers: {modifiers}, Key: {key}");
     }
     #endregion
 }

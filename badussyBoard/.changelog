@@ -24,6 +24,12 @@ v0.0.0.3: Restructured repo files. Separated most methods from MainWindow into n
 - Fixed a tiny bug that would cause a PromptSaveAs if "Remove" button was clicked without actually removing a SoundItem
 - ATTEMPTED to get sounds playing when a registered hotkey is pressed. 
     Not working:
-    - Modifiers like Ctrl, Alt, etc. are not respected in the app's current state. Removing a SoundItem with the remove button does not currently un-register its hotkey
+    - Modifiers like Ctrl, Alt, etc. are not respected in the app's current state
+    - Removing a SoundItem with the remove button does not currently un-register its hotkey
     TODO:
     - Fix that shit
+
+v0.0.0.4: Got sound hotkeys working properly. Changed target OS from Win7 -> Win10
+- Changed target OS from Windows 7 to Windows 10.0.19041.0. Supports Windows 10 21H1 - Windows 11 24H2
+- Sounds now correctly play when selected hotkey is pressed. Fixed modifiers not being respected for SoundItem hotkeys
+- Normalize modifiers like LeftCtrl -> Ctrl in PickerWindow before creating/editing/registering SoundItems

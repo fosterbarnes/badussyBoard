@@ -57,7 +57,7 @@ namespace BadussyBoard
             DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref useDarkMode, Marshal.SizeOf(useDarkMode));
             DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1, ref useDarkMode, Marshal.SizeOf(useDarkMode));
         }
-        
+
         private void PopulateFieldsFromItem(SoundItem item)
         {
             selectedFilePath = item.FilePath;
@@ -67,11 +67,63 @@ namespace BadussyBoard
             SoundPickerText.Text = string.IsNullOrWhiteSpace(selectedFilePath) ? "Click to set sound file..." : selectedFilePath;
             HotkeyPickerText.Text = string.IsNullOrWhiteSpace(selectedHotkey) ? "Click to set hotkey..." : selectedHotkey;
             //TODO MIDI hotkey
+
+            Debug.WriteLine($"[PickerWindow.PopulateFieldsFromItem] PopulateFieldsFromItem - Initial values:");
+            Debug.WriteLine($"[PickerWindow.PopulateFieldsFromItem] FilePath: {item.FilePath ?? "<null>"}");
+            Debug.WriteLine($"[PickerWindow.PopulateFieldsFromItem] FileName: {item.FileName ?? "<null>"}");
+            Debug.WriteLine($"[PickerWindow.PopulateFieldsFromItem] Hotkey: {item.Hotkey ?? "<null>"}");
+            Debug.WriteLine($"[PickerWindow.PopulateFieldsFromItem] MIDIHotkey: {item.MIDIHotkey ?? "<null>"}\n");
+        }
+
+        private bool IsModifierKey(Key key)
+        {
+            return key == Key.LeftCtrl || key == Key.RightCtrl ||
+            key == Key.LeftAlt || key == Key.RightAlt ||
+            key == Key.LeftShift || key == Key.RightShift ||
+            key == Key.LWin || key == Key.RWin;
+        }
+        
+        private string NormalizeHotkey(string? raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+            return string.Empty;
+
+            // Split tokens, trim them
+            var tokens = raw.Split('+', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Trim())
+                    .Where(t => t.Length > 0)
+                    .ToList();
+
+            // Normalize tokens into canonical token list (modifiers -> key)
+            bool hasCtrl = tokens.Any(t => t.IndexOf("CTRL", StringComparison.OrdinalIgnoreCase) >= 0
+                                   || t.Equals("CONTROL", StringComparison.OrdinalIgnoreCase));
+            bool hasAlt  = tokens.Any(t => t.IndexOf("ALT", StringComparison.OrdinalIgnoreCase) >= 0);
+            bool hasShift= tokens.Any(t => t.IndexOf("SHIFT", StringComparison.OrdinalIgnoreCase) >= 0);
+            bool hasWin  = tokens.Any(t => t.IndexOf("WIN", StringComparison.OrdinalIgnoreCase) >= 0);
+
+            // Find first non-modifier token (prefer last token if multiple)
+            string? mainKey = tokens
+            .Where(t => !(t.IndexOf("CTRL", StringComparison.OrdinalIgnoreCase) >= 0
+                    || t.IndexOf("ALT", StringComparison.OrdinalIgnoreCase) >= 0
+                    || t.IndexOf("SHIFT", StringComparison.OrdinalIgnoreCase) >= 0
+                    || t.IndexOf("WIN", StringComparison.OrdinalIgnoreCase) >= 0
+                    || t.Equals("CONTROL", StringComparison.OrdinalIgnoreCase)))
+            .LastOrDefault();
+
+            var parts = new List<string>();
+            if (hasCtrl) parts.Add("Ctrl");
+            if (hasAlt)  parts.Add("Alt");
+            if (hasShift)parts.Add("Shift");
+            if (hasWin)  parts.Add("Win");
+            if (!string.IsNullOrWhiteSpace(mainKey))
+            parts.Add(mainKey!);
+
+            return string.Join(" + ", parts);
         }
 
         private void SoundPicker_LeftClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("[PickerWindow] Left Click: Sound File Picker");
+            Debug.WriteLine("[PickerWindow.SoundPicker_LeftClick] Left Click: Sound File Picker");
 
             //Pick Sound File
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -84,19 +136,24 @@ namespace BadussyBoard
             {
                 selectedFilePath = openFileDialog.FileName;
                 SoundPickerText.Text = selectedFilePath;
+
+                Debug.WriteLine($"[PickerWindow.SoundPicker_LeftClick] Sound file selected:");
+                Debug.WriteLine($"[PickerWindow.SoundPicker_LeftClick] FilePath: {selectedFilePath}");
+                Debug.WriteLine($"[PickerWindow.SoundPicker_LeftClick] FileName: {System.IO.Path.GetFileName(selectedFilePath)}\n");
             }
         }
 
         private void SoundPicker_RightClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("[PickerWindow] Right Click: Sound File Picker");
+            Debug.WriteLine("[PickerWindow.SoundPicker_RightClick] Right Click: Sound File Picker");
             selectedFilePath = null;
             SoundPickerText.Text = "Click to set sound file...";
+            Debug.WriteLine("[PickerWindow.SoundPicker_RightClick] FilePath cleared -> <null>\n");
         }
 
         private void HotkeyPicker_LeftClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("[PickerWindow] Left Click: Hotkey Picker");
+            Debug.WriteLine("[PickerWindow.HotkeyPicker_LeftClick] Left Click: Hotkey Picker");
 
             //Pick Hotkey
             if (!isCapturingHotkey)
@@ -105,14 +162,17 @@ namespace BadussyBoard
                 pressedKeys.Clear();
                 HotkeyPickerText.Text = "Press your key(s)...";
                 HotkeyPicker.Focus(); // capture keyboard input
+
+                Debug.WriteLine("[PickerWindow.HotkeyPicker_LeftClick] Hotkey capture started");
             }
         }
 
         private void HotkeyPicker_RightClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("[PickerWindow] Right Click: Hotkey Picker");
+            Debug.WriteLine("[PickerWindow.HotkeyPicker_RightClick] Right Click: Hotkey Picker");
             selectedHotkey = null;
             HotkeyPickerText.Text = "Click to set hotkey...";
+            Debug.WriteLine("[PickerWindow.HotkeyPicker_RightClick] Hotkey cleared -> <null>\n");
         }
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -120,18 +180,34 @@ namespace BadussyBoard
             base.OnPreviewKeyDown(e);
 
             if (!isCapturingHotkey)
-                return;
+            return;
 
-            // Don't include modifier system keys like "System" or "ImeProcessed"
-            if (e.Key == Key.System || e.Key == Key.ImeProcessed)
-                return;
+            if (e.Key == Key.System || e.Key == Key.ImeProcessed) // Don't include modifier system keys like "System" or "ImeProcessed"
+            return;
 
-            pressedKeys.Add(e.Key);
+            pressedKeys.Add(e.Key); // Keep track of pressed keys
 
-            // Format the pressed keys
-            selectedHotkey = string.Join(" + ", pressedKeys.Select(k => k.ToString()));
+            // Build canonical string: modifiers (from Keyboard.Modifiers) then the primary non-modifier key
+            var parts = new List<string>();
+            var mods = Keyboard.Modifiers;
+            if ((mods & ModifierKeys.Control) != 0) parts.Add("Ctrl");
+            if ((mods & ModifierKeys.Alt) != 0)     parts.Add("Alt");
+            if ((mods & ModifierKeys.Shift) != 0)   parts.Add("Shift");
+            if ((mods & ModifierKeys.Windows) != 0) parts.Add("Win");
+
+            // Find a non-modifier key from pressedKeys
+            var mainKey = pressedKeys
+                .Where(k => !IsModifierKey(k))
+                .Select(k => k.ToString())
+                .LastOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(mainKey))
+            parts.Add(mainKey);
+
+            selectedHotkey = string.Join(" + ", parts);
             HotkeyPickerText.Text = selectedHotkey;
         }
+
         
         protected override void OnPreviewKeyUp(KeyEventArgs e)
         {
@@ -144,25 +220,26 @@ namespace BadussyBoard
             if (Keyboard.Modifiers == ModifierKeys.None && pressedKeys.Count > 0)
             {
                 isCapturingHotkey = false;
-                Debug.WriteLine($"[PickerWindow] Hotkey set: {selectedHotkey}");
+                Debug.WriteLine($"[PickerWindow.OnPreviewKeyUp] Hotkey set: {selectedHotkey ?? "<null>"}");
+                Debug.WriteLine("[PickerWindow.OnPreviewKeyUp] Final Hotkey string: " + (selectedHotkey ?? "<null>")); Debug.WriteLine("");
             }
         }
         
         private void MIDIPicker_LeftClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("[PickerWindow] Left Click: MIDI Picker");
+            Debug.WriteLine("[PickerWindow.MIDIPicker_LeftClick] Left Click: MIDI Picker");
             //TODO Add logic
         }
 
         private void MIDIPicker_RightClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("[PickerWindow] Right Click: MIDI Picker");
+            Debug.WriteLine("[PickerWindow.MIDIPicker_RightClick] Right Click: MIDI Picker");
             //TODO Add logic
         }
         
         private void Done_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("[PickerWindow] Click: Done");
+            Debug.WriteLine("[PickerWindow.Done_Click] Click: Done");
 
             if (string.IsNullOrWhiteSpace(selectedFilePath))
             {
@@ -176,31 +253,43 @@ namespace BadussyBoard
                 return;
             }
 
-            SoundItem item; // for sound manager
+            // Normalize the hotkey before saving or registering
+            selectedHotkey = NormalizeHotkey(selectedHotkey);
+
+            SoundItem item;
 
             if (_soundToEdit != null)
             {
-                // update the existing item
+                // Update existing item
                 _soundToEdit.FilePath = selectedFilePath!;
                 _soundToEdit.Hotkey = selectedHotkey!;
                 item = _soundToEdit;
-                //TODO MIDI hotkey
 
-                //refresh the DataGrid
-                _mainWindow.SoundDataGrid.Items.Refresh();
+                Debug.WriteLine("[PickerWindow.Done_Click] Updating existing SoundItem with these values:");
             }
             else
             {
-                // Add item to MainWindow as new sound
-                item = new SoundItem
-                {
-                    FilePath = selectedFilePath!,
-                    Hotkey = selectedHotkey!
-                    //TODO MIDI Hotkey
-                };
-                _mainWindow.SoundItems.Add(item);
+            // Create new item
+            item = new SoundItem
+            {
+                FilePath = selectedFilePath!,
+                Hotkey = selectedHotkey!
+            };
+
+            _mainWindow.SoundItems.Add(item);
+
+            Debug.WriteLine("[PickerWindow.Done_Click] Creating new SoundItem with these values:");
             }
-            _mainWindow.Sound.RegisterHotkey(item); // Register the hotkey with SoundManager
+
+            Debug.WriteLine($"[PickerWindow.Done_Click] FilePath: {item.FilePath ?? "<null>"}");
+            Debug.WriteLine($"[PickerWindow.Done_Click] FileName: {item.FileName ?? "<null>"}");
+            Debug.WriteLine($"[PickerWindow.Done_Click] Hotkey: {item.Hotkey ?? "<null>"}");
+            Debug.WriteLine($"[PickerWindow.Done_Click] MIDIHotkey: {item.MIDIHotkey ?? "<null>"}\n");
+
+            _mainWindow.SoundDataGrid.Items.Refresh();
+
+            Debug.WriteLine("[PickerWindow.Done_Click] Registering hotkey with SoundManager...");
+            _mainWindow.Sound.RegisterHotkey(item);
 
             this.Close();
         }
